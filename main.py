@@ -26,7 +26,7 @@ PRODUCT_EMBEDDINGS = {}
 # ====================
 def get_db_engine():
     return create_engine(
-        "mysql+pymysql://root:mysql@localhost/adaptive_ecom?charset=utf8mb4",
+        "mysql://root:oXVEbLyvJvTdSyIbeiZCoUtmrdECihiw@nozomi.proxy.rlwy.net:11480/railway",
         pool_pre_ping=True
     )
 
