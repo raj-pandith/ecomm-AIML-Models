@@ -25,10 +25,8 @@ PRODUCT_EMBEDDINGS = {}
 # DATABASE CONNECTION
 # ====================
 def get_db_engine():
-    return create_engine(
-        "mysql://root:oXVEbLyvJvTdSyIbeiZCoUtmrdECihiw@nozomi.proxy.rlwy.net:11480/railway",
-        pool_pre_ping=True
-    )
+    database_url = os.getenv("DATABASE_URL")
+    return create_engine(database_url, pool_pre_ping=True)
 
 
 @app.get("/")
