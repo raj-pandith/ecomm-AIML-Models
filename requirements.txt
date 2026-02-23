@@ -1,2 +1,9 @@
 fastapi
-uvicorn[standard]
+uvicorn
+numpy
+joblib
+sqlalchemy
+pymysql
+sentence-transformers
+scikit-learn
+torch
