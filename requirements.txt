@@ -6,4 +6,3 @@ sqlalchemy
 pymysql
 sentence-transformers
 scikit-learn
-torch
