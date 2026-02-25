@@ -140,8 +140,9 @@ def get_recommender():
 # ====================
 @app.get("/recommend")
 def recommend(user_id: int, n: int = 6):
+    recommender = get_recommender()
     if recommender is None:
-        raise HTTPException(500, "Recommender model not loaded")
+        raise HTTPException(500, "Recommender not available")
 
     preds = [
         (pid, recommender.predict(user_id, pid).est)
@@ -192,6 +193,7 @@ def get_price(user_id: int, product_id: int):
         sales_count = int(sales_count_raw) if sales_count_raw is not None else 0
         category = str(category_raw) if category_raw is not None else "Unknown"
 
+        pricing_info = get_pricing_model()
         if pricing_info is None:
             return {
                 "suggested_price": round(base_price, 2),
@@ -323,5 +325,5 @@ def search_products(query: str, n: int = 6):
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
+    port = int(os.environ.get("PORT", 7860))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
