@@ -6,6 +6,10 @@ import os
 from sqlalchemy import create_engine, text
 from sentence_transformers import SentenceTransformer
 from decimal import Decimal
+import uvicorn
+
+from dotenv import load_dotenv
+load_dotenv()
 
 app = FastAPI(title="AI Pricing & Recs Demo")
 
@@ -31,7 +35,7 @@ def get_db_engine():
 
 @app.get("/")
 def home():
-    return {"message": "Hello from FastAPI on Railway!"}
+    return {"message": "Hello from FastAPI !"}
 
 # ====================
 # STARTUP EVENT
@@ -295,3 +299,12 @@ def search_products(query: str, n: int = 6):
     except Exception as e:
         print(f"Search error: {e}")
         return {"error": str(e)}
+
+
+
+
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)

@@ -3,7 +3,10 @@ uvicorn
 numpy
 joblib
 sqlalchemy
-pymysql
+pydantic
 sentence-transformers
 scikit-learn
 torch
+psycopg2-binary
+pymysql
+python-dotenv
