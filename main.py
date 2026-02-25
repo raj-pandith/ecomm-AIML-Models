@@ -40,84 +40,101 @@ def home():
 # ====================
 # STARTUP EVENT
 # ====================
-@app.on_event("startup")
-async def startup_event():
-    global pricing_info, recommender, embedder, PRODUCT_EMBEDDINGS
+# @app.on_event("startup")
+# async def startup_event():
+#     global pricing_info, recommender, embedder, PRODUCT_EMBEDDINGS
 
-    print("\n=== Application Startup Started ===")
+#     print("\n=== Application Startup Started ===")
 
-    # ---- Pricing model
-    if os.path.exists(PRICING_MODEL_PATH):
+#     # ---- Pricing model
+#     if os.path.exists(PRICING_MODEL_PATH):
+#         pricing_info = joblib.load(PRICING_MODEL_PATH)
+#         print("✅ Pricing model loaded")
+#     else:
+#         print("⚠️ Pricing model not found")
+
+#     # ---- Recommender model
+#     if os.path.exists(RECOMMENDER_MODEL_PATH):
+#         recommender = joblib.load(RECOMMENDER_MODEL_PATH)
+#         print("✅ Recommender model loaded")
+#     else:
+#         print("⚠️ Recommender model not found")
+
+#     # ---- Embedding model
+#     try:
+#         embedder = SentenceTransformer("all-MiniLM-L6-v2")
+#         print("✅ SentenceTransformer loaded")
+#     except Exception as e:
+#         print(f"❌ Embedding model load failed: {e}")
+#         embedder = None
+
+#     # ---- Build embeddings
+#     PRODUCT_EMBEDDINGS = {}
+
+#     if embedder is None:
+#         print("⚠️ Skipping embeddings (no embedder)")
+#         return
+
+#     try:
+#         engine = get_db_engine()
+#         print("Connecting to database...")
+
+#         with engine.connect() as conn:
+#             rows = conn.execute(
+#                 text("SELECT id, name, description FROM products")
+#             ).fetchall()
+
+#         print(f"Found {len(rows)} products")
+
+#         for idx, row in enumerate(rows, 1):
+#             pid = None
+#             product_text = ""
+
+#             try:
+#                 pid = int(row[0])
+#                 name = row[1] or ""
+#                 desc = row[2] or ""
+
+#                 product_text = f"{name} {desc}".strip()
+#                 if not product_text:
+#                     continue
+
+#                 emb = embedder.encode(product_text)
+#                 PRODUCT_EMBEDDINGS[pid] = emb.tolist()
+
+#                 print(f"  ✔ Embedded product {pid}")
+
+#             except Exception as row_err:
+#                 print(
+#                     f"  ❌ Row {idx} failed | id={pid} | "
+#                     f"text='{product_text[:40]}' | err={row_err}"
+#                 )
+
+#         print(f"✅ Created embeddings for {len(PRODUCT_EMBEDDINGS)} products")
+
+#     except Exception as e:
+#         print(f"❌ Embedding build failed: {e}")
+#         PRODUCT_EMBEDDINGS = {}
+
+#     print("=== Application Startup Completed ===\n")
+
+pricing_info = None
+recommender = None
+
+def get_pricing_model():
+    global pricing_info
+    if pricing_info is None and os.path.exists(PRICING_MODEL_PATH):
         pricing_info = joblib.load(PRICING_MODEL_PATH)
-        print("✅ Pricing model loaded")
-    else:
-        print("⚠️ Pricing model not found")
+        print("✅ Pricing model loaded (lazy)")
+    return pricing_info
 
-    # ---- Recommender model
-    if os.path.exists(RECOMMENDER_MODEL_PATH):
+
+def get_recommender():
+    global recommender
+    if recommender is None and os.path.exists(RECOMMENDER_MODEL_PATH):
         recommender = joblib.load(RECOMMENDER_MODEL_PATH)
-        print("✅ Recommender model loaded")
-    else:
-        print("⚠️ Recommender model not found")
-
-    # ---- Embedding model
-    try:
-        embedder = SentenceTransformer("all-MiniLM-L6-v2")
-        print("✅ SentenceTransformer loaded")
-    except Exception as e:
-        print(f"❌ Embedding model load failed: {e}")
-        embedder = None
-
-    # ---- Build embeddings
-    PRODUCT_EMBEDDINGS = {}
-
-    if embedder is None:
-        print("⚠️ Skipping embeddings (no embedder)")
-        return
-
-    try:
-        engine = get_db_engine()
-        print("Connecting to database...")
-
-        with engine.connect() as conn:
-            rows = conn.execute(
-                text("SELECT id, name, description FROM products")
-            ).fetchall()
-
-        print(f"Found {len(rows)} products")
-
-        for idx, row in enumerate(rows, 1):
-            pid = None
-            product_text = ""
-
-            try:
-                pid = int(row[0])
-                name = row[1] or ""
-                desc = row[2] or ""
-
-                product_text = f"{name} {desc}".strip()
-                if not product_text:
-                    continue
-
-                emb = embedder.encode(product_text)
-                PRODUCT_EMBEDDINGS[pid] = emb.tolist()
-
-                print(f"  ✔ Embedded product {pid}")
-
-            except Exception as row_err:
-                print(
-                    f"  ❌ Row {idx} failed | id={pid} | "
-                    f"text='{product_text[:40]}' | err={row_err}"
-                )
-
-        print(f"✅ Created embeddings for {len(PRODUCT_EMBEDDINGS)} products")
-
-    except Exception as e:
-        print(f"❌ Embedding build failed: {e}")
-        PRODUCT_EMBEDDINGS = {}
-
-    print("=== Application Startup Completed ===\n")
-
+        print("✅ Recommender model loaded (lazy)")
+    return recommender
 # ====================
 # USER-BASED RECOMMENDATION
 # ====================
